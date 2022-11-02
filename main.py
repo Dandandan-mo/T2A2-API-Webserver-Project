@@ -18,6 +18,7 @@ def create_app():
     jwt.init_app(app)
 
     # register Blueprints
+    
     @app.route('/')
     def index():
         return {"message": "Welcome to the C2C ecommerce app!"}
