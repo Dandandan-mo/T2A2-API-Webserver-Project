@@ -1,6 +1,8 @@
 from flask import Flask
 from init import db, ma, bcrypt, jwt
 import os
+from controllers.auth_controller import auth_bp
+from controllers.cli_controller import db_bp
 
 def create_app():
 
@@ -18,11 +20,11 @@ def create_app():
     jwt.init_app(app)
 
     # register Blueprints
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(db_bp)
     
     @app.route('/')
     def index():
         return {"message": "Welcome to the C2C ecommerce app!"}
 
     return app
-
-

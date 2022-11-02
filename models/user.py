@@ -9,7 +9,7 @@ class User(db.Model):
     first_name = db.Column(db.String)
     last_name = db.Column(db.String)
     phone_number = db.Column(db.String, nullable=False)
-
+    
     addresses = db.relationship('Address', back_populates='user', cascade='all, delete')
     products = db.relationship('Product', back_populates='user', cascade='all, delete')
 

@@ -27,7 +27,6 @@ class OrderProduct(db.Model):
     product = db.relationship('Product', back_populates='order_products')
 
 
-
 class OrderSchema(ma.Schema):
     user = fields.Nested('User', only=['first_name', 'last_name'])
     order_products = fields.List(fields.Nested('OrderProduct', exclude=['order_id']))
