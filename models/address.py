@@ -13,7 +13,7 @@ class Address(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
 
     user = db.relationship('User', back_populates='addresses')
-    shipments = db.relationship('Shipment', back_populates='address')
+    # shipments = db.relationship('Shipment', back_populates='address')
 
 class AddressSchema(ma.Schema):
     user = fields.Nested('UserSchema', only=['first_name', 'last_name', 'phone_number'])

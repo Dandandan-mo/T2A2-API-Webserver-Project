@@ -30,6 +30,6 @@ def user_login():
     user = db.session.scalar(stmt)
     if user and bcrypt.check_password_hash(user.password, request.json['password']):
         token = create_access_token(identity=str(user.id), expires_delta=timedelta(days=1))
-        return {'username': user.username, 'token': token}
+        return {'username': user.username, 'token': token, 'is_admin': user.is_admin}
     else:
         return {'error': 'Invalid username or password.'}, 401

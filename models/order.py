@@ -11,8 +11,8 @@ class Order(db.Model):
 
     user = db.relationship('User', back_populates='orders')
     order_products = db.relationship('OrderProduct', back_populates='order', cascade='all, delete')
-    payment = db.relationship('Payment', back_populates='order', cascade= 'all, delete')
-    shipment = db.relationship('Shipment', back_populates='order', cascade='all, delete')
+    # payment = db.relationship('Payment', back_populates='order', cascade= 'all, delete')
+    # shipment = db.relationship('Shipment', back_populates='order', cascade='all, delete')
 
 class OrderProduct(db.Model):
     __tablename__ = 'order_products'

@@ -1,8 +1,10 @@
 from init import db, bcrypt
-from datetime import date
+from datetime import datetime
 from flask import Blueprint
 from models.user import User
 from models.address import Address
+from models.product import Category, Product
+from models.order import Order, OrderProduct
 
 db_bp = Blueprint('db', __name__)
 
@@ -27,11 +29,12 @@ def seed_db():
             phone_number = '0432000001'
         ),
         User(
-            username = 'seconduser@email.com',
+            username = 'adminuser@email.com',
             password = bcrypt.generate_password_hash('password567').decode('utf-8'),
             first_name = 'Ali',
             last_name = "Wong",
-            phone_number = "0430000021"
+            phone_number = "0430000021",
+            is_admin = True
         )
     ]
     db.session.add_all(users)
@@ -54,8 +57,97 @@ def seed_db():
         )
     ]
     db.session.add_all(addresses)
-    db.commit()
 
-    # keep adding basic data for all the entities
-    
+    categories = [
+        Category(
+            name = 'Electronics'
+        ),
+        Category(
+            name = 'Motors'
+        ),
+        Category(
+            name = 'Home & Garden'
+        ),
+        Category(
+            name = 'Clothing & Accessories'
+        ),
+        Category(
+            name = 'Sports'
+        ),
+        Category(
+            name = 'Health & Beauty'
+        ),
+        Category(
+            name = 'Other'
+        )
+    ]
+    db.session.add_all(categories)
+    db.session.commit()
+
+    products = [
+        Product(
+            name = 'Apple iPhone 11',
+            description = 'As new condition, 64GB, without contract.',
+            quantity = 3,
+            price = 478.5,
+            user = users[0],
+            category = categories[0]
+        ),
+        Product(
+            name = 'Single Bunk Bed',
+            description = 'Solid wooden bed frame, brand-new item in its original packaging; color: white; height: 152.2 cm.',
+            quantity = 15,
+            price = 425,
+            user = users[0],
+            category = categories[2]
+        ),
+        Product(
+            name = 'Mesh Beach Tote Bag',
+            description = 'Lightweight bag made of Polyester, foldable and fast drying, perfect for travel.',
+            quantity = 5,
+            price = 20.25,
+            user = users[1],
+            category = categories[3]
+        ),
+        Product(
+            name = 'Long Raincoat',
+            description = 'Men waterproof black hooded trench jacket for outdoor hiking. Size L.',
+            quantity = 2,
+            price = 24,
+            user = users[1],
+            category = categories[3]
+        )
+    ]
+    db.session.add_all(products)
+
+    orders = [
+        Order(
+            date = datetime.strptime('11-01-22', '%m-%d-%y').date(),
+            user = users[0]
+        ),
+        Order(
+            date = datetime.strptime('11-02-22', '%m-%d-%y').date(),
+            user = users[1]
+        )
+    ]
+    db.session.add_all(orders)
+    db.session.commit()
+
+    order_products = [
+        OrderProduct(
+            order = orders[0],
+            product = products[0],
+            price = 478.5,
+            quantity = 1
+        ),
+        OrderProduct(
+            order = orders[1],
+            product = products[2],
+            price = 20.25,
+            quantity = 1
+        )
+    ]
+    db.session.add_all(order_products)
+    db.session.commit()
+
     print('Tables seeded')
