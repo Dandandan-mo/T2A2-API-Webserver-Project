@@ -1,4 +1,5 @@
 from init import db, ma
+from marshmallow import fields
 
 class User(db.Model):
     __tablename__ = 'users'
@@ -16,6 +17,7 @@ class User(db.Model):
     orders = db.relationship('Order', back_populates='user', cascade='all, delete')
 
 class UserSchema(ma.Schema):
+    products = fields.List(fields.Nested('Product', exclude=['user_id']))
     class Meta:
         fields = ('id', 'username', 'password', 'first_name', 'last_name', 'phone_number', 'is_admin')
         ordered = True
