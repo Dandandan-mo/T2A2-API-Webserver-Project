@@ -42,6 +42,7 @@ def seed_db():
 
     addresses = [
         Address(
+            tag = 'Home',
             street_number = '11',
             street_name = 'Nicolson St',
             suburb = 'Calten',
@@ -49,6 +50,7 @@ def seed_db():
             user = users[0]
         ),
         Address(
+            tag = 'Home',
             street_number = '1',
             street_name = 'Flemmingten Rd',
             suburb = 'Purkvile',
