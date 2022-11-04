@@ -7,6 +7,7 @@ from sqlalchemy.exc import IntegrityError
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
+# create user: users can register an account for the app.
 @auth_bp.route('/register/', methods=['POST'])
 def register_user():
     try:
@@ -24,6 +25,7 @@ def register_user():
     except IntegrityError:
         return {"error": f"The username {request.json['username']} already in use."}, 409
 
+# login as a user: users can login to their account
 @auth_bp.route('/login/', methods=['POST'])
 def user_login():
     stmt = db.select(User).filter_by(username=request.json['username'])

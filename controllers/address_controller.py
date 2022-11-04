@@ -5,6 +5,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 
 address_bp = Blueprint('address', __name__, url_prefix='/address')
 
+# create address: all users can add their addresses to their account.
 @address_bp.route('/', methods=['POST'])
 @jwt_required()
 def add_address():
@@ -21,6 +22,7 @@ def add_address():
     db.session.commit()
     return AddressSchema().dump(address), 201
 
+# read addresses: all users can see the addresses they added for themselves
 @address_bp.route('/')
 @jwt_required()
 def get_addresses():
@@ -28,6 +30,7 @@ def get_addresses():
     addresses = db.session.scalars(stmt)
     return AddressSchema(many=True).dump(addresses)
 
+# read addresses: all users can filter their addresses based on tags
 @address_bp.route('/<string:tag>/')
 @jwt_required()
 def get_an_address(tag):
@@ -35,6 +38,7 @@ def get_an_address(tag):
     addresses = db.session.scalars(stmt)
     return AddressSchema(many=True).dump(addresses)
 
+# update address: all users can update their own address by address id
 @address_bp.route('/<int:id>', methods=['PUT', 'PATCH'])
 @jwt_required()
 def update_address(id):
@@ -53,6 +57,7 @@ def update_address(id):
     else:
         return {'error': f'Address with id {id} not found in your account.'}, 404
 
+# delete address: all users can delete their own address by address id
 @address_bp.route('/<int:id>', methods=['DELETE'])
 @jwt_required()
 def delete_address(id):
