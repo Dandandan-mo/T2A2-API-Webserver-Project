@@ -1,5 +1,6 @@
 from init import db, ma
-from marshmallow import fields
+from marshmallow import fields, validates
+from marshmallow.exceptions import ValidationError
 
 class Category(db.Model):
     __tablename__ = 'categories'
@@ -32,6 +33,12 @@ class CategorySchema(ma.Schema):
 class ProductSchema(ma.Schema):
     user = fields.Nested('UserSchema', only=['username'])
     category = fields.Nested('CategorySchema', only=['name'])
+
+    # @validates('quantity')
+    # def validate_quantity(self, value):
+    #     if value < 0:
+    #         raise ValidationError()
+
     class Meta:
         fields = ('id', 'name', 'description', 'price', 'quantity', 'user_id', 'category_id','category', 'user')
         ordered = True

@@ -23,7 +23,7 @@ def add_product():
         db.session.commit()
         return ProductSchema().dump(product)
     except IntegrityError:
-        return {'error': 'Invalid category_id input.'}, 500
+        return {'error': 'Invalid category_id input.'}, 400
 
 # read products: all users can browse all products for sale.
 @product_bp.route('/')

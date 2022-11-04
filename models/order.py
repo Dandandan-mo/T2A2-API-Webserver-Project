@@ -30,11 +30,23 @@ class OrderProduct(db.Model):
 class OrderSchema(ma.Schema):
     user = fields.Nested('UserSchema', only=['first_name', 'last_name'])
     order_products = fields.List(fields.Nested('OrderProductSchema', exclude=['order_id']))
+
+    # total_payable = fields.Method("calc_total_payable")
+
+    # def calc_total_payable(self, order):
+    #     total = 0
+    #     for product in order.order_products:
+    #         total += product['payable']
+    #         return total
+
     class Meta:
         fields = ('id', 'date', 'user_id', 'user', 'order_products')
+        ordered = True
 
 class OrderProductSchema(ma.Schema):
-    total_price = fields.Function(lambda product_orders: sum(product_orders.price * product_orders.quantity))
+    product = fields.Nested('ProductSchema', only=['name'])
+    payable = fields.Function(lambda order_product: order_product.price * order_product.quantity)
 
     class Meta:
-        fields = ('order_id', 'product_id', 'price', 'quantity', 'total_price')
+        fields = ('order_id', 'product_id', 'product', 'price', 'quantity', 'payable')
+        ordered = True

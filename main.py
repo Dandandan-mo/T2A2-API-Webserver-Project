@@ -7,6 +7,7 @@ from controllers.user_controller import user_bp
 from controllers.address_controller import address_bp
 from controllers.category_controller import category_bp
 from controllers.product_controller import product_bp
+from controllers.order_controller import order_bp
 
 def create_app():
 
@@ -19,7 +20,7 @@ def create_app():
     # errorhandlers
     @app.errorhandler(KeyError)
     def key_error(err):
-        return {'error': f'The field {err} is required.'}, 500
+        return {'error': f'The field {err} is required.'}, 400
 
     @app.errorhandler(401)
     def unauthorized(err):
@@ -37,6 +38,7 @@ def create_app():
     app.register_blueprint(address_bp)
     app.register_blueprint(category_bp)
     app.register_blueprint(product_bp)
+    app.register_blueprint(order_bp)
     
     @app.route('/')
     def index():
