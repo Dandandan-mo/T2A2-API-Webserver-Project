@@ -5,6 +5,7 @@ from controllers.auth_controller import auth_bp
 from controllers.cli_controller import db_bp
 from controllers.user_controller import user_bp
 from controllers.address_controller import address_bp
+from controllers.category_controller import category_bp
 
 def create_app():
 
@@ -19,6 +20,10 @@ def create_app():
     def key_error(err):
         return {'error': f'The field {err} is required.'}, 500
 
+    @app.errorhandler(401)
+    def unauthorized(err):
+        return {'error': str(err)}, 401
+
     db.init_app(app)
     ma.init_app(app)
     bcrypt.init_app(app)
@@ -29,6 +34,7 @@ def create_app():
     app.register_blueprint(db_bp)
     app.register_blueprint(user_bp)
     app.register_blueprint(address_bp)
+    app.register_blueprint(category_bp)
     
     @app.route('/')
     def index():
