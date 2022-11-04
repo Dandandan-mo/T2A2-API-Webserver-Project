@@ -30,7 +30,8 @@ class CategorySchema(ma.Schema):
         fields = ('id', 'name')
 
 class ProductSchema(ma.Schema):
-    category = fields.Nested('Category', only=['name'])
+    user = fields.Nested('UserSchema', only=['username'])
+    category = fields.Nested('CategorySchema', only=['name'])
     class Meta:
-        fields = ('id', 'name', 'description', 'price', 'quantity', 'user_id', 'category_id','category')
+        fields = ('id', 'name', 'description', 'price', 'quantity', 'user_id', 'category_id','category', 'user')
         ordered = True

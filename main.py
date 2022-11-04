@@ -6,6 +6,7 @@ from controllers.cli_controller import db_bp
 from controllers.user_controller import user_bp
 from controllers.address_controller import address_bp
 from controllers.category_controller import category_bp
+from controllers.product_controller import product_bp
 
 def create_app():
 
@@ -35,6 +36,7 @@ def create_app():
     app.register_blueprint(user_bp)
     app.register_blueprint(address_bp)
     app.register_blueprint(category_bp)
+    app.register_blueprint(product_bp)
     
     @app.route('/')
     def index():

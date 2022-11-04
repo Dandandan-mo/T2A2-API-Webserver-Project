@@ -17,7 +17,7 @@ class Address(db.Model):
     # shipments = db.relationship('Shipment', back_populates='address')
 
 class AddressSchema(ma.Schema):
-    user = fields.Nested('UserSchema', only=['first_name', 'last_name', 'phone_number'])
+    user = fields.Nested('UserSchema', only=['username', 'phone_number'])
     class Meta:
-        fields = ('id', 'tag', 'street_number', 'street_name', 'suburb', 'postcode', 'user_id', 'users')
+        fields = ('id', 'tag', 'street_number', 'street_name', 'suburb', 'postcode', 'user_id', 'user')
         ordered = True

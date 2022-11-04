@@ -4,7 +4,7 @@ from models.product import Category, CategorySchema
 from flask_jwt_extended import jwt_required
 from controllers.auth_controller import authorize
 
-category_bp = Blueprint('category', __name__, url_prefix='/category')
+category_bp = Blueprint('categories', __name__, url_prefix='/categories')
 
 # create a category: only admin users can create a new category
 @category_bp.route('/', methods=['POST'])
@@ -30,7 +30,7 @@ def get_categories():
 @category_bp.route('/<int:id>')
 @jwt_required()
 def get_a_category(id):
-    stmt = db.select(Category).filer_by(id=id)
+    stmt = db.select(Category).filter_by(id=id)
     category = db.session.scalar(stmt)
     if category:
         return CategorySchema().dump(category)

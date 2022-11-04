@@ -28,8 +28,8 @@ class OrderProduct(db.Model):
 
 
 class OrderSchema(ma.Schema):
-    user = fields.Nested('User', only=['first_name', 'last_name'])
-    order_products = fields.List(fields.Nested('OrderProduct', exclude=['order_id']))
+    user = fields.Nested('UserSchema', only=['first_name', 'last_name'])
+    order_products = fields.List(fields.Nested('OrderProductSchema', exclude=['order_id']))
     class Meta:
         fields = ('id', 'date', 'user_id', 'user', 'order_products')
 

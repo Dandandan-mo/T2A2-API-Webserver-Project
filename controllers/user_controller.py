@@ -3,7 +3,7 @@ from init import db, bcrypt
 from models.user import User, UserSchema
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
-user_bp = Blueprint('user', __name__, url_prefix='/users')
+user_bp = Blueprint('users', __name__, url_prefix='/users')
 
 # read users: all users can view a list of all users
 @user_bp.route('/')

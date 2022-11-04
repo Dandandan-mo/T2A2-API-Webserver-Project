@@ -17,7 +17,7 @@ class User(db.Model):
     orders = db.relationship('Order', back_populates='user', cascade='all, delete')
 
 class UserSchema(ma.Schema):
-    products = fields.List(fields.Nested('Product', exclude=['user_id']))
+    products = fields.List(fields.Nested('ProductSchema', exclude=['user_id', 'user']))
     class Meta:
-        fields = ('id', 'username', 'password', 'first_name', 'last_name', 'phone_number', 'is_admin')
+        fields = ('id', 'username', 'password', 'first_name', 'last_name', 'phone_number', 'is_admin', 'products')
         ordered = True

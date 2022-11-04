@@ -3,7 +3,7 @@ from init import db
 from models.address import Address, AddressSchema
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
-address_bp = Blueprint('address', __name__, url_prefix='/address')
+address_bp = Blueprint('addresses', __name__, url_prefix='/addresses')
 
 # create address: all users can add their addresses to their account.
 @address_bp.route('/', methods=['POST'])
