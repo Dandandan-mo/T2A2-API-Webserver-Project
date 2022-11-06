@@ -27,7 +27,7 @@ def get_categories():
     return CategorySchema(many=True).dump(categories)
 
 # read a category: all users can view a certain category by providing a category id.
-@category_bp.route('/<int:id>')
+@category_bp.route('/<int:id>/')
 @jwt_required()
 def get_a_category(id):
     stmt = db.select(Category).filter_by(id=id)
@@ -38,7 +38,7 @@ def get_a_category(id):
         return {'error': f'Category with id {id} not found.'}, 404
 
 # update categories: only admin users can update category info.
-@category_bp.route('/<int:id>', methods=['PUT', 'PATCH'])
+@category_bp.route('/<int:id>/', methods=['PUT', 'PATCH'])
 @jwt_required()
 def update_category(id):
     authorize()
@@ -52,7 +52,7 @@ def update_category(id):
         return {'error': f'Category with id {id} not found.'}, 404
 
 # delete a category: only admin users can delete a category.
-@category_bp.route('/<int:id>', methods=['DELETE'])
+@category_bp.route('/<int:id>/', methods=['DELETE'])
 @jwt_required()
 def delete_category(id):
     authorize()

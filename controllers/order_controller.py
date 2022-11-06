@@ -1,4 +1,4 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, abort
 from init import db
 from datetime import date
 from models.product import Product
@@ -18,11 +18,13 @@ def create_order():
     db.session.add(order)
     db.session.commit()
 
+    check_and_update_quantity()
     add_product_to_order(order)
     return OrderSchema().dump(order), 201
+  
 
-# create more order_products: users can add more products to an existing order.
-@order_bp.route('/<int:id>', methods=['POST'])
+# add more order_products: users can add more products to an existing order.
+@order_bp.route('/<int:id>/', methods=['PUT'])
 @jwt_required()
 def update_order(id):
     stmt = db.select(Order).filter_by(id=id, user_id=get_jwt_identity())
@@ -30,22 +32,36 @@ def update_order(id):
     if not order:
         return {'error': f'You dn not have an order with id {id}.'}, 404
 
-    add_product_to_order(order)
+    check_and_update_quantity()
+    
+    stmt = db.select(OrderProduct).filter_by(order_id=id, product_id=request.json['product_id'])
+    order_product = db.session.scalar(stmt)
+    if not order_product:
+        add_product_to_order(order)
+    else:
+        order_product.quantity += request.json['quantity']
+        db.session.commit()
     return OrderSchema().dump(order), 201
 
-# read order: all users can view their orders
+# read orders: all users can view their orders
+@order_bp.route('/')
+@jwt_required()
+def get_orders():
+    stmt = db.select(Order).filter_by(user_id=get_jwt_identity()).order_by(Order.id.desc())
+    orders = db.session.scalars(stmt)
+    return OrderSchema(many=True).dump(orders)
+
+# read a certain order: all users can view details of a certain order by providing the order id.
+
+# update order_products: all users can update the quantities of the products added to the order
 
 # delete order_products: all users can delete items in an order
+
+
 
 def add_product_to_order(order):
     stmt = db.select(Product).filter_by(id=request.json['product_id'])
     product = db.session.scalar(stmt)
-    if not product:
-        return {'error': f"Product not found with id {request.json['product_id']} in this order."}, 404
-    if not product.quantity >= request.json['quantity']:
-        return {'error': 'Requested quantity larger than avaiable quantity.'}, 400
-    product.quantity -= request.json['quantity']
-
     order_product = OrderProduct(
         order = order,
         product = product,
@@ -55,3 +71,14 @@ def add_product_to_order(order):
     
     db.session.add(order_product)
     db.session.commit()
+    
+def check_and_update_quantity():
+    stmt = db.select(Product).filter_by(id=request.json['product_id'])
+    product = db.session.scalar(stmt)
+    if not product:
+        abort(404, f"Product not found with id {request.json['product_id']}.")
+
+    if not product.quantity >= request.json['quantity']:
+        abort(400, 'Requested quantity larger than avaiable quantity.')
+
+    product.quantity -= request.json['quantity']
