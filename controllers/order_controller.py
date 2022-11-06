@@ -22,8 +22,7 @@ def create_order():
     add_product_to_order(order)
     return OrderSchema().dump(order), 201
   
-
-# add more order_products: users can add more products to an existing order.
+# update order products: users can add more products to an existing order.
 @order_bp.route('/<int:id>/', methods=['PUT'])
 @jwt_required()
 def update_order(id):
@@ -33,7 +32,7 @@ def update_order(id):
         return {'error': f'You dn not have an order with id {id}.'}, 404
 
     check_and_update_quantity()
-    
+
     stmt = db.select(OrderProduct).filter_by(order_id=id, product_id=request.json['product_id'])
     order_product = db.session.scalar(stmt)
     if not order_product:
@@ -52,12 +51,45 @@ def get_orders():
     return OrderSchema(many=True).dump(orders)
 
 # read a certain order: all users can view details of a certain order by providing the order id.
+@order_bp.route('/<int:id>/')
+@jwt_required()
+def get_an_order(id):
+    stmt = db.select(Order).filter_by(id=id, user_id=get_jwt_identity())
+    order = db.session.scalar(stmt)
+    if not order:
+        return {'error': f'You do not have an order with id {id}.'}, 404
+    return OrderSchema().dump(order)
 
-# update order_products: all users can update the quantities of the products added to the order
+# delete order_products: all users can delete products in an order
+@order_bp.route('/<int:id>/del_product/', methods=['DELETE'])
+@jwt_required()
+def delete_a_product(id):
+    stmt = db.select(Order).filter_by(id=id, user_id=get_jwt_identity())
+    order = db.session.scalar(stmt)
+    if not order:
+        return {'error': f'You do not have an order with id {id}.'}, 404
+    
+    stmt = db.select(OrderProduct).filter_by(order_id=id, product_id=request.json['product_id'])
+    order_product = db.session.scalar(stmt)
+    if not order_product:
+        return {'error': f"Product not found with id {request.json['product_id']}."}, 404
+    stmt = db.select(Product).filter_by(id=request.json['product_id'])
+    product = db.session.scalar(stmt)
 
-# delete order_products: all users can delete items in an order
-
-
+    db.session.delete(order_product)
+    product.quantity += order_product.quantity
+    db.session.commit()
+    return OrderSchema().dump(order)
+    
+# delete an order: all users can delete their own order history
+@order_bp.route('/<int:id>/', methods=["DELETE"])
+@jwt_required()
+def delete_order(id):
+    stmt = db.select(Order).filter_by(id=id, user_id=get_jwt_identity())
+    order = db.session.scalar(stmt)
+    db.session.delete(order)
+    db.session.commit()
+    return {'message': f'Order {id} deleted successfully.'}
 
 def add_product_to_order(order):
     stmt = db.select(Product).filter_by(id=request.json['product_id'])
@@ -68,7 +100,6 @@ def add_product_to_order(order):
         price = product.price,
         quantity = request.json['quantity']
     )
-    
     db.session.add(order_product)
     db.session.commit()
     
@@ -77,7 +108,6 @@ def check_and_update_quantity():
     product = db.session.scalar(stmt)
     if not product:
         abort(404, f"Product not found with id {request.json['product_id']}.")
-
     if not product.quantity >= request.json['quantity']:
         abort(400, 'Requested quantity larger than avaiable quantity.')
 
