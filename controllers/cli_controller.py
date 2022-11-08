@@ -22,14 +22,14 @@ def drop_db():
 def seed_db():
     users = [
         User(
-            username = 'firstuser@email.com',
+            email = 'firstuser@email.com',
             password = bcrypt.generate_password_hash('password234').decode('utf-8'),
             first_name = 'Jimmy',
             last_name = 'OYang',
             phone_number = '0432000001'
         ),
         User(
-            username = 'adminuser@email.com',
+            email = 'adminuser@email.com',
             password = bcrypt.generate_password_hash('password567').decode('utf-8'),
             first_name = 'Ali',
             last_name = "Wong",
@@ -42,7 +42,6 @@ def seed_db():
 
     addresses = [
         Address(
-            tag = 'Home',
             street_number = '11',
             street_name = 'Nicolson St',
             suburb = 'Calten',
@@ -50,7 +49,6 @@ def seed_db():
             user = users[0]
         ),
         Address(
-            tag = 'Home',
             street_number = '1',
             street_name = 'Flemmingten Rd',
             suburb = 'Purkvile',

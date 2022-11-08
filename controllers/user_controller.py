@@ -30,12 +30,14 @@ def get_one_user(id):
 def update_account():
     stmt = db.select(User).filter_by(id=get_jwt_identity())
     user = db.session.scalar(stmt)
-
-    user.username = request.json.get('username') or user.username
-    user.password = bcrypt.generate_password_hash(request.json.get('password')).decode('utf-8') or user.password
-    user.first_name = request.json.get('first_name') or user.first_name
-    user.last_name = request.json.get('last_name') or user.last_name
-    user.phone_number = request.json.get('phone_number') or user.phone_number
+    
+    info = UserSchema().load(request.json, partial=True)
+    user.email = info.get('email') or user.email
+    if info.get('password'):
+        user.password = bcrypt.generate_password_hash(request.json.get('password')).decode('utf-8')
+    user.first_name = info.get('first_name') or user.first_name
+    user.last_name = info.get('last_name') or user.last_name
+    user.phone_number = info.get('phone_number') or user.phone_number
 
     db.session.commit()
     return UserSchema(exclude=['password']).dump(user)
@@ -49,4 +51,4 @@ def delete_account():
 
     db.session.delete(user)
     db.session.commit()
-    return {'message': f'Account "{user.username}" deleted successfully.'}
+    return {'message': f'Account "{user.email}" deleted successfully.'}

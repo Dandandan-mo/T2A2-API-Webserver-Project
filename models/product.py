@@ -1,6 +1,6 @@
 from init import db, ma
-from marshmallow import fields, validates
-from marshmallow.exceptions import ValidationError
+from marshmallow import fields
+from marshmallow.validate import Regexp
 
 class Category(db.Model):
     __tablename__ = 'categories'
@@ -27,11 +27,12 @@ class Product(db.Model):
     order_products = db.relationship('OrderProduct', back_populates='product', cascade='all, delete')
 
 class CategorySchema(ma.Schema):
+    name = fields.String(required=True, validate=Regexp("^[A-Za-z' ]+$", error='Only letters and spaces and certain characters are allowed.'))
     class Meta:
         fields = ('id', 'name')
 
 class ProductSchema(ma.Schema):
-    user = fields.Nested('UserSchema', only=['username'])
+    user = fields.Nested('UserSchema', only=['email'])
     category = fields.Nested('CategorySchema', only=['name'])
 
     # @validates('quantity')

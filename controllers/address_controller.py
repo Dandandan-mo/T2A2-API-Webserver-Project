@@ -9,12 +9,12 @@ address_bp = Blueprint('addresses', __name__, url_prefix='/addresses')
 @address_bp.route('/', methods=['POST'])
 @jwt_required()
 def add_address():
+    info = AddressSchema().load(request.json)
     address = Address(
-        tag = request.json.get('tag'),
-        street_number = request.json['street_number'],
-        street_name = request.json['street_name'],
-        suburb = request.json['suburb'],
-        postcode = request.json['postcode'],
+        street_number = info['street_number'],
+        street_name = info['street_name'],
+        suburb = info['suburb'],
+        postcode = info['postcode'],
         user_id = get_jwt_identity()
     )
 
@@ -30,11 +30,11 @@ def get_addresses():
     addresses = db.session.scalars(stmt)
     return AddressSchema(many=True).dump(addresses)
 
-# read addresses: all users can filter their addresses based on tags
-@address_bp.route('/<string:tag>/')
+# read addresses: all users can filter their addresses by entering address id.
+@address_bp.route('/<int:id>/')
 @jwt_required()
-def get_an_address(tag):
-    stmt = db.select(Address).filter_by(user_id=get_jwt_identity(),tag=tag)
+def get_an_address(id):
+    stmt = db.select(Address).filter_by(user_id=get_jwt_identity(),id=id)
     addresses = db.session.scalars(stmt)
     return AddressSchema(many=True).dump(addresses)
 
@@ -44,13 +44,13 @@ def get_an_address(tag):
 def update_address(id):
     stmt = db.select(Address).filter_by(user_id=get_jwt_identity(),id=id)
     address = db.session.scalar(stmt)
+    info = AddressSchema().load(request.json, partial=True)
 
     if address:
-        address.tag = request.json.get('tag') or address.tag
-        address.street_number = request.json.get('street_number') or address.street_number
-        address.street_name = request.json.get('street_name') or address.street_name
-        address.suburb = request.json.get('suburb') or address.suburb
-        address.postcode = request.json.get('postcode') or address.postcode
+        address.street_number = info.get('street_number') or address.street_number
+        address.street_name = info.get('street_name') or address.street_name
+        address.suburb = info.get('suburb') or address.suburb
+        address.postcode = info.get('postcode') or address.postcode
 
         db.session.commit()
         return AddressSchema().dump(address)
