@@ -1,7 +1,7 @@
 from flask import Blueprint, request, abort
 from init import db
 from datetime import date
-from models.product import Product
+from models.product import Product, ProductSchema
 from models.order import Order, OrderSchema, OrderProduct, OrderProductSchema
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
@@ -22,14 +22,14 @@ def create_order():
     add_product_to_order(order)
     return OrderSchema().dump(order), 201
   
-# update order products: users can add more products to an existing order.
-@order_bp.route('/<int:id>/', methods=['PUT'])
+# add more order products: users can add more products to an existing order.
+@order_bp.route('/<int:id>/', methods=['POST'])
 @jwt_required()
-def update_order(id):
+def add_product_to_order(id):
     stmt = db.select(Order).filter_by(id=id, user_id=get_jwt_identity())
     order = db.session.scalar(stmt)
     if not order:
-        return {'error': f'You dn not have an order with id {id}.'}, 404
+        return {'error': f'You do not have an order with id {id}.'}, 404
 
     check_and_update_quantity()
 
@@ -41,6 +41,32 @@ def update_order(id):
         order_product.quantity += request.json['quantity']
         db.session.commit()
     return OrderSchema().dump(order), 201
+
+# update order products: users can adjust quantities of product they selected.
+@order_bp.route('/<int:id>/', methods=['PUT', 'PATCH'])
+def update_order_product(id):
+    stmt = db.select(Order).filter_by(id=id, user_id=get_jwt_identity())
+    order = db.session.scalar(stmt)
+    if not order:
+        return {'error': f'You do not have an order with id {id}.'}, 404
+    stmt = db.select(Product).filter_by(id=request.json['product_id'])
+    product = db.session.scalar(stmt)
+    if not product:
+        return {'error': f"Product with id {request.json['product_id']} not found."}, 404
+    stmt = db.select(OrderProduct).filter_by(order_id=id, product_id=request.json['product_id'])
+    order_product = db.session.scalar(stmt)
+    if not order_product:
+        return {'error': f"Product with id {request.json['product_id']} is not in your order {id}."}, 404
+    else:
+        product.quantity += order_product.quantity
+        if product.quantity >= request.json['quantity']:
+            order_product.quantity = request.json['quantity']
+            product.quantity -= request.json['quantity']
+            db.session.commit()
+            return OrderSchema().dump(order)
+        else:
+            abort(400, 'Requested quantity larger than avaiable quantity.')
+
 
 # read orders: all users can view their orders
 @order_bp.route('/')

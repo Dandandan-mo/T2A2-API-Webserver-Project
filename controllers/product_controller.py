@@ -1,4 +1,4 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, abort
 from init import db
 from models.product import Product, ProductSchema
 from flask_jwt_extended import jwt_required, get_jwt_identity
@@ -15,10 +15,10 @@ def add_product():
         product = Product(
             name = data['name'],
             description = data.get('description'),
+            category = data['category'],
             quantity = data['quantity'],
             price = data['price'],
             user_id = get_jwt_identity(),
-            category_id = data['category_id']
         )
         db.session.add(product)
         db.session.commit()
@@ -35,10 +35,10 @@ def get_products():
     return ProductSchema(many=True).dump(products)
 
 # read produts: all users can filter products by categories
-@product_bp.route('/category:<int:id>/')
+@product_bp.route('/<string:category>/')
 @jwt_required()
-def filter_products(id):
-    stmt = db.select(Product).filter_by(category_id=id)
+def filter_products(category):
+    stmt = db.select(Product).filter_by(category=category)
     products = db.session.scalars(stmt)
     return ProductSchema(many=True).dump(products)
 
@@ -57,30 +57,34 @@ def get_a_product(id):
 @product_bp.route('/<int:id>/', methods=['PUT', 'PATCH'])
 @jwt_required()
 def update_product(id):
-    stmt = db.select(Product).filter_by(id=id, user_id=get_jwt_identity())
+    stmt = db.select(Product).filter_by(id=id)
     product = db.session.scalar(stmt)
+    if not product:
+        return {'error': f'Product not found with id {id}'}, 404
     data = ProductSchema().load(request.json, partial=True)
-    if product:
+    if product.user_id == get_jwt_identity():
         product.name = data.get('name') or product.name
         product.description = data.get('description') or product.description
+        product.category = data.get('category') or product.category
         product.quantity = data.get('quantity') or product.quantity
         product.price = data.get('price') or product.price
-        product.category_id = data.get('category_id') or product.category_id
 
         db.session.commit()
         return ProductSchema().dump(product)
     else:
-        return {'error': f'You do not have a product with id {id}'}, 404
+        abort(401, 'You are not authorised to edit this product.')
 
 # delete a product: users can delete products they posted.
 @product_bp.route('/<int:id>/', methods=['DELETE'])
 @jwt_required()
 def delete_product(id):
-    stmt = db.select(Product).filter_by(id=id, user_id=get_jwt_identity())
+    stmt = db.select(Product).filter_by(id=id)
     product = db.session.scalar(stmt)
-    if product:
+    if not product:
+        return {'error': f'Product not found with id {id}'}, 404
+    if product.user_id == get_jwt_identity():
         db.session.delete(product)
         db.session.commit()
         return {'message': f'Product "{product.name}" deleted successfully.'}
     else:
-        return {'error': f'You do not have a product with id {id}'}, 404
+        abort(401, 'You are not authorised to delete this product.')

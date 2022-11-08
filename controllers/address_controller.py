@@ -55,7 +55,7 @@ def update_address(id):
         db.session.commit()
         return AddressSchema().dump(address)
     else:
-        return {'error': f'Address with id {id} not found in your account.'}, 404
+        return {'error': f'You do not have an address with id {id}.'}, 404
 
 # delete address: all users can delete their own address by address id
 @address_bp.route('/<int:id>', methods=['DELETE'])
@@ -69,4 +69,4 @@ def delete_address(id):
         db.session.commit()
         return {'message': 'Address deleted successfully.'}
     else:
-        return {'error': f'Address with id {id} not found in your account.'}, 404
+        return {'error': f'You do not have an address with id {id}.'}, 404

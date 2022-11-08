@@ -11,7 +11,6 @@ class User(db.Model):
     first_name = db.Column(db.String)
     last_name = db.Column(db.String)
     phone_number = db.Column(db.String, nullable=False)
-    is_admin = db.Column(db.Boolean, default=False)
     
     addresses = db.relationship('Address', back_populates='user', cascade='all, delete')
     products = db.relationship('Product', back_populates='user', cascade='all, delete')
@@ -30,8 +29,7 @@ class UserSchema(ma.Schema):
     ))
     first_name = fields.String(validate=Regexp('^[A-Za-z]+$', error='Only letters are allowed.'))
     last_name = fields.String(validate=Regexp('^[A-Za-z]+$', error='Only letters are allowed.'))
-    is_admin = fields.Boolean()
 
     class Meta:
-        fields = ('id', 'email', 'password', 'first_name', 'last_name', 'phone_number', 'is_admin', 'products')
+        fields = ('id', 'email', 'password', 'first_name', 'last_name', 'phone_number', 'products')
         ordered = True

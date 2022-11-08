@@ -1,5 +1,6 @@
 from init import db, ma
 from marshmallow import fields
+from marshmallow.validate import Range
 
 class Order(db.Model):
     __tablename__ = 'orders'
@@ -46,6 +47,8 @@ class OrderSchema(ma.Schema):
 class OrderProductSchema(ma.Schema):
     product = fields.Nested('ProductSchema', only=['name'])
     payable = fields.Function(lambda order_product: order_product.price * order_product.quantity)
+    product_id = fields.Integer(required=True, validate=Range(min=1, min_inclusive=True, error='Product id must be a positive integer.'))
+    quantity = fields.Integer(required=True, validate=Range(min=1, min_inclusive=True, error='The mininum quantity is 1.'))
 
     class Meta:
         fields = ('order_id', 'product_id', 'product', 'price', 'quantity', 'payable')
