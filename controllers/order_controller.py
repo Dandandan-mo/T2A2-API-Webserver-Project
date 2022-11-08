@@ -25,7 +25,7 @@ def create_order():
 # add more order products: users can add more products to an existing order.
 @order_bp.route('/<int:id>/', methods=['POST'])
 @jwt_required()
-def add_product_to_order(id):
+def add_order_product(id):
     stmt = db.select(Order).filter_by(id=id, user_id=get_jwt_identity())
     order = db.session.scalar(stmt)
     if not order:
