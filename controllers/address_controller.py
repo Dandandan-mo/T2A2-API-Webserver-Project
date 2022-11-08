@@ -9,12 +9,12 @@ address_bp = Blueprint('addresses', __name__, url_prefix='/addresses')
 @address_bp.route('/', methods=['POST'])
 @jwt_required()
 def add_address():
-    info = AddressSchema().load(request.json)
+    data = AddressSchema().load(request.json)
     address = Address(
-        street_number = info['street_number'],
-        street_name = info['street_name'],
-        suburb = info['suburb'],
-        postcode = info['postcode'],
+        street_number = data['street_number'],
+        street_name = data['street_name'],
+        suburb = data['suburb'],
+        postcode = data['postcode'],
         user_id = get_jwt_identity()
     )
 
@@ -44,13 +44,13 @@ def get_an_address(id):
 def update_address(id):
     stmt = db.select(Address).filter_by(user_id=get_jwt_identity(),id=id)
     address = db.session.scalar(stmt)
-    info = AddressSchema().load(request.json, partial=True)
+    data = AddressSchema().load(request.json, partial=True)
 
     if address:
-        address.street_number = info.get('street_number') or address.street_number
-        address.street_name = info.get('street_name') or address.street_name
-        address.suburb = info.get('suburb') or address.suburb
-        address.postcode = info.get('postcode') or address.postcode
+        address.street_number = data.get('street_number') or address.street_number
+        address.street_name = data.get('street_name') or address.street_name
+        address.suburb = data.get('suburb') or address.suburb
+        address.postcode = data.get('postcode') or address.postcode
 
         db.session.commit()
         return AddressSchema().dump(address)

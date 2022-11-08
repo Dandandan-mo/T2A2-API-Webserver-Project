@@ -1,6 +1,6 @@
 from init import db, ma
 from marshmallow import fields
-from marshmallow.validate import Regexp
+from marshmallow.validate import Regexp, Range
 
 class Category(db.Model):
     __tablename__ = 'categories'
@@ -27,7 +27,8 @@ class Product(db.Model):
     order_products = db.relationship('OrderProduct', back_populates='product', cascade='all, delete')
 
 class CategorySchema(ma.Schema):
-    name = fields.String(required=True, validate=Regexp("^[A-Za-z' ]+$", error='Only letters and spaces and certain characters are allowed.'))
+    name = fields.String(required=True, validate=Regexp("^[A-Za-z ]+$", error='Only letters and spaces are allowed.'))
+
     class Meta:
         fields = ('id', 'name')
 
@@ -35,10 +36,11 @@ class ProductSchema(ma.Schema):
     user = fields.Nested('UserSchema', only=['email'])
     category = fields.Nested('CategorySchema', only=['name'])
 
-    # @validates('quantity')
-    # def validate_quantity(self, value):
-    #     if value < 0:
-    #         raise ValidationError()
+    name = fields.String(required=True, validate=Regexp("^[A-Za-z ]+$", error='Only letters and spaces are allowed.'))
+    description = fields.String(validate=Regexp("^[A-Za-z ]+$", error='Only letters and spaces are allowed.'))
+    quantity = fields.Integer(required=True, validate=Range(min=1, min_inclusive=True, error='The minimum quantity is 1.'))
+    price = fields.Float(required=True, validate=Range(min=0, min_inclusive=False, error='Price must be positive.'))
+    category_id = fields.Integer(required=True, validate=Range(min=1, min_inclusive=True, error='Category id must be a positive integer.'))
 
     class Meta:
         fields = ('id', 'name', 'description', 'price', 'quantity', 'user_id', 'category_id','category', 'user')

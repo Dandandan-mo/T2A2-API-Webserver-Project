@@ -10,14 +10,15 @@ product_bp = Blueprint('products', __name__, url_prefix='/products')
 @product_bp.route('/', methods=['POST'])
 @jwt_required()
 def add_product():
+    data = ProductSchema().load(request.json)
     try:
         product = Product(
-            name = request.json['name'],
-            description = request.json.get('description'),
-            quantity = request.json['quantity'],
-            price = request.json['price'],
+            name = data['name'],
+            description = data.get('description'),
+            quantity = data['quantity'],
+            price = data['price'],
             user_id = get_jwt_identity(),
-            category_id = request.json['category_id']
+            category_id = data['category_id']
         )
         db.session.add(product)
         db.session.commit()
@@ -58,12 +59,13 @@ def get_a_product(id):
 def update_product(id):
     stmt = db.select(Product).filter_by(id=id, user_id=get_jwt_identity())
     product = db.session.scalar(stmt)
+    data = ProductSchema().load(request.json, partial=True)
     if product:
-        product.name = request.json.get('name') or product.name
-        product.description = request.json.get('description') or product.description
-        product.quantity = request.json.get('quantity') or product.quantity
-        product.price = request.json.get('price') or product.price
-        product.category_id = request.json.get('category_id') or product.category_id
+        product.name = data.get('name') or product.name
+        product.description = data.get('description') or product.description
+        product.quantity = data.get('quantity') or product.quantity
+        product.price = data.get('price') or product.price
+        product.category_id = data.get('category_id') or product.category_id
 
         db.session.commit()
         return ProductSchema().dump(product)

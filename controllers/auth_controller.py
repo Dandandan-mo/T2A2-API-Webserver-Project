@@ -10,14 +10,14 @@ auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 # create user: users can register an account for the app.
 @auth_bp.route('/register/', methods=['POST'])
 def register_user():
-    info = UserSchema().load(request.json)
+    data = UserSchema().load(request.json)
     try:
         user = User(
-            email = info['email'],
-            password = bcrypt.generate_password_hash(info['password']).decode('utf-8'),
-            first_name = info.get('first_name'),
-            last_name = info.get('last_name'),
-            phone_number = info['phone_number']
+            email = data['email'],
+            password = bcrypt.generate_password_hash(data['password']).decode('utf-8'),
+            first_name = data.get('first_name'),
+            last_name = data.get('last_name'),
+            phone_number = data['phone_number']
         )
         db.session.add(user)
         db.session.commit()
