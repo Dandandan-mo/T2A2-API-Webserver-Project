@@ -48,6 +48,7 @@ class OrderProductSchema(ma.Schema):
     product = fields.Nested('ProductSchema', only=['name'])
     payable = fields.Function(lambda order_product: order_product.price * order_product.quantity)
     product_id = fields.Integer(required=True, validate=Range(min=1, min_inclusive=True, error='Product id must be a positive integer.'))
+    price = fields.Float(required=True, validate=Range(min=0, min_inclusive=True, error='The lowest price is 0.'))
     quantity = fields.Integer(required=True, validate=Range(min=1, min_inclusive=True, error='The mininum quantity is 1.'))
 
     class Meta:

@@ -2,7 +2,6 @@ from flask import Blueprint, request, abort
 from init import db
 from models.product import Product, ProductSchema
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from sqlalchemy.exc import IntegrityError
 
 product_bp = Blueprint('products', __name__, url_prefix='/products')
 
@@ -11,20 +10,17 @@ product_bp = Blueprint('products', __name__, url_prefix='/products')
 @jwt_required()
 def add_product():
     data = ProductSchema().load(request.json)
-    try:
-        product = Product(
-            name = data['name'],
-            description = data.get('description'),
-            category = data['category'],
-            quantity = data['quantity'],
-            price = data['price'],
-            user_id = get_jwt_identity(),
-        )
-        db.session.add(product)
-        db.session.commit()
-        return ProductSchema().dump(product)
-    except IntegrityError:
-        return {'error': 'Invalid category_id input.'}, 400
+    product = Product(
+        name = data['name'],
+        description = data.get('description'),
+        category = data['category'],
+        quantity = data['quantity'],
+        price = data['price'],
+        user_id = get_jwt_identity()
+    )
+    db.session.add(product)
+    db.session.commit()
+    return ProductSchema().dump(product)
 
 # read products: all users can browse all products for sale.
 @product_bp.route('/')
