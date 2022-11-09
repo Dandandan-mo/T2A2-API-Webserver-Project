@@ -4,7 +4,8 @@ from flask import Blueprint
 from models.user import User
 from models.address import Address
 from models.product import Product
-from models.order import Order, OrderProduct
+from models.order import Order
+from models.order_product import OrderProduct
 
 db_bp = Blueprint('db', __name__)
 

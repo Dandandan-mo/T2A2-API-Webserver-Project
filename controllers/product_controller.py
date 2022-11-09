@@ -1,4 +1,4 @@
-from flask import Blueprint, request, abort
+from flask import Blueprint, request
 from init import db
 from models.product import Product, ProductSchema
 from flask_jwt_extended import jwt_required, get_jwt_identity

@@ -2,7 +2,8 @@ from flask import Blueprint, request, abort
 from init import db
 from datetime import date
 from models.product import Product
-from models.order import Order, OrderSchema, OrderProduct, OrderProductSchema
+from models.order import Order, OrderSchema
+from models.order_product import OrderProduct, OrderProductSchema
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 order_bp = Blueprint('orders', __name__, url_prefix='/orders')
@@ -58,7 +59,7 @@ def update_order_product(id):
     product = db.session.scalar(stmt)
     if not product:
         return {'error': f"Product with id {data['product_id']} not found."}, 404
-        
+
     stmt = db.select(OrderProduct).filter_by(order_id=id, product_id=data['product_id'])
     order_product = db.session.scalar(stmt)
     if not order_product:
