@@ -23,14 +23,14 @@ def seed_db():
     users = [
         User(
             email = 'firstuser@email.com',
-            password = bcrypt.generate_password_hash('password234').decode('utf-8'),
+            password = bcrypt.generate_password_hash('Password234!').decode('utf-8'),
             first_name = 'Jimmy',
             last_name = 'OYang',
             phone_number = '0432000001'
         ),
         User(
             email = 'seconduser@email.com',
-            password = bcrypt.generate_password_hash('password567').decode('utf-8'),
+            password = bcrypt.generate_password_hash('Password567@').decode('utf-8'),
             first_name = 'Ali',
             last_name = "Wong",
             phone_number = "0430000021"
@@ -69,7 +69,7 @@ def seed_db():
         Product(
             name = 'Single Bunk Bed',
             description = 'Solid wooden bed frame, brand-new item in its original packaging; color: white; height: 152.2 cm.',
-            category = 'Home & Garden',
+            category = 'Home',
             quantity = 15,
             price = 425,
             user = users[0]
@@ -77,7 +77,7 @@ def seed_db():
         Product(
             name = 'Mesh Beach Tote Bag',
             description = 'Lightweight bag made of Polyester, foldable and fast drying, perfect for travel.',
-            category = 'Clothing & Accessories',
+            category = 'Accessories',
             quantity = 5,
             price = 20.25,
             user = users[1]
@@ -85,7 +85,7 @@ def seed_db():
         Product(
             name = 'Long Raincoat',
             description = 'Men waterproof black hooded trench jacket for outdoor hiking. Size L.',
-            category = 'Clothing & Accessories',
+            category = 'Clothing',
             quantity = 2,
             price = 24,
             user = users[1]

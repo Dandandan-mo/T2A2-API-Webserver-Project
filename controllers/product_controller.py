@@ -53,34 +53,28 @@ def get_a_product(id):
 @product_bp.route('/<int:id>/', methods=['PUT', 'PATCH'])
 @jwt_required()
 def update_product(id):
-    stmt = db.select(Product).filter_by(id=id)
+    stmt = db.select(Product).filter_by(id=id, user_id=get_jwt_identity())
     product = db.session.scalar(stmt)
     if not product:
-        return {'error': f'Product not found with id {id}'}, 404
+        return {'error': f'You do not have a product with id {id}'}, 404
     data = ProductSchema().load(request.json, partial=True)
-    if product.user_id == get_jwt_identity():
-        product.name = data.get('name') or product.name
-        product.description = data.get('description') or product.description
-        product.category = data.get('category') or product.category
-        product.quantity = data.get('quantity') or product.quantity
-        product.price = data.get('price') or product.price
+    product.name = data.get('name') or product.name
+    product.description = data.get('description') or product.description
+    product.category = data.get('category') or product.category
+    product.quantity = data.get('quantity') or product.quantity
+    product.price = data.get('price') or product.price
 
-        db.session.commit()
-        return ProductSchema().dump(product)
-    else:
-        abort(401, 'You are not authorised to edit this product.')
+    db.session.commit()
+    return ProductSchema().dump(product)
 
 # delete a product: users can delete products they posted.
 @product_bp.route('/<int:id>/', methods=['DELETE'])
 @jwt_required()
 def delete_product(id):
-    stmt = db.select(Product).filter_by(id=id)
+    stmt = db.select(Product).filter_by(id=id, user_id=get_jwt_identity())
     product = db.session.scalar(stmt)
     if not product:
-        return {'error': f'Product not found with id {id}'}, 404
-    if product.user_id == get_jwt_identity():
-        db.session.delete(product)
-        db.session.commit()
-        return {'message': f'Product "{product.name}" deleted successfully.'}
-    else:
-        abort(401, 'You are not authorised to delete this product.')
+        return {'error': f'You do not have a product with id {id}'}, 404
+    db.session.delete(product)
+    db.session.commit()
+    return {'message': f'Product "{product.name}" deleted successfully.'}

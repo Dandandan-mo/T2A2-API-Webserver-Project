@@ -27,8 +27,8 @@ class UserSchema(ma.Schema):
         Length(min=7, max=15, error='Phone number must be 7-15 digits long.'),
         Regexp('^[0-9]+$', error='Only digits are allowed.')
     ))
-    first_name = fields.String(validate=Regexp('^[A-Za-z]+$', error='Only letters are allowed.'))
-    last_name = fields.String(validate=Regexp('^[A-Za-z]+$', error='Only letters are allowed.'))
+    first_name = fields.String(validate=Length(min=2, error='Name entered must contain at least 2 characters.'))
+    last_name = fields.String()
 
     class Meta:
         fields = ('id', 'email', 'password', 'first_name', 'last_name', 'phone_number', 'products')

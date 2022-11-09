@@ -67,6 +67,6 @@ def delete_address(id):
     if address:
         db.session.delete(address)
         db.session.commit()
-        return {'message': 'Address deleted successfully.'}
+        return {'message': f'Address {id} deleted successfully.'}
     else:
         return {'error': f'You do not have an address with id {id}.'}, 404

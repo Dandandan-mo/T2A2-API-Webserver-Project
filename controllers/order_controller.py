@@ -46,16 +46,19 @@ def add_order_product(id):
 
 # update order products: users can adjust quantities of product they selected.
 @order_bp.route('/<int:id>/', methods=['PUT', 'PATCH'])
+@jwt_required()
 def update_order_product(id):
     data = OrderProductSchema().load(request.json, partial=True)
     stmt = db.select(Order).filter_by(id=id, user_id=get_jwt_identity())
     order = db.session.scalar(stmt)
     if not order:
         return {'error': f'You do not have an order with id {id}.'}, 404
+
     stmt = db.select(Product).filter_by(id=data['product_id'])
     product = db.session.scalar(stmt)
     if not product:
         return {'error': f"Product with id {data['product_id']} not found."}, 404
+        
     stmt = db.select(OrderProduct).filter_by(order_id=id, product_id=data['product_id'])
     order_product = db.session.scalar(stmt)
     if not order_product:
@@ -98,15 +101,17 @@ def delete_a_product(id):
     if not order:
         return {'error': f'You do not have an order with id {id}.'}, 404
     
-    stmt = db.select(OrderProduct).filter_by(order_id=id, product_id=request.json['product_id'])
+    data = OrderProductSchema().load(request.json)
+    stmt = db.select(OrderProduct).filter_by(order_id=id, product_id=data['product_id'])
     order_product = db.session.scalar(stmt)
     if not order_product:
-        return {'error': f"Product not found with id {request.json['product_id']}."}, 404
-    stmt = db.select(Product).filter_by(id=request.json['product_id'])
-    product = db.session.scalar(stmt)
-
+        return {'error': f"Product not found with id {data['product_id']}."}, 404
     db.session.delete(order_product)
+
+    stmt = db.select(Product).filter_by(id=data['product_id'])
+    product = db.session.scalar(stmt)
     product.quantity += order_product.quantity
+
     db.session.commit()
     return OrderSchema().dump(order)
     
