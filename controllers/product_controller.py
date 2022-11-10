@@ -6,7 +6,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 product_bp = Blueprint('products', __name__, url_prefix='/products')
 
 # create product: all users can post their own product for sale.
-@product_bp.route('/', methods=['POST'])
+@product_bp.route('/new_product/', methods=['POST'])
 @jwt_required()
 def add_product():
     data = ProductSchema().load(request.json)
@@ -50,7 +50,7 @@ def get_a_product(id):
         return {'error': f'Product not found with id {id}.'}, 404
 
 # update a product: users can update products they posted.
-@product_bp.route('/<int:id>/', methods=['PUT', 'PATCH'])
+@product_bp.route('/<int:id>/update/', methods=['PUT', 'PATCH'])
 @jwt_required()
 def update_product(id):
     stmt = db.select(Product).filter_by(id=id, user_id=get_jwt_identity())
@@ -68,7 +68,7 @@ def update_product(id):
     return ProductSchema().dump(product)
 
 # delete a product: users can delete products they posted.
-@product_bp.route('/<int:id>/', methods=['DELETE'])
+@product_bp.route('/<int:id>/del', methods=['DELETE'])
 @jwt_required()
 def delete_product(id):
     stmt = db.select(Product).filter_by(id=id, user_id=get_jwt_identity())

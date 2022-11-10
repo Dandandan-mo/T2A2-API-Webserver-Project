@@ -18,9 +18,9 @@ class Address(db.Model):
 class AddressSchema(ma.Schema):
     user = fields.Nested('UserSchema', only=['first_name', 'last_name', 'phone_number'])
 
-    street_number = fields.String(required=True, validate=Regexp("^[0-9a-zA-Z.'#@%& -/]+$", error='Only numbers, letters, spaces and certain characters are allowed.'))
-    street_name = fields.String(required=True, validate=Regexp("^[0-9a-zA-Z.'#@%& -/]+$", error='Only numbers, letters, spaces and certain characters are allowed.'))
-    suburb = fields.String(required=True, validate=Regexp("^[a-zA-Z.'#@%& -/]+$", error='Only letters, spaces and certain characters are allowed.'))
+    street_number = fields.String(required=True, validate=Regexp("^[0-9a-zA-Z.'#@%& -/]+$", error='Only numbers, letters, spaces and valid characters for address are allowed.'))
+    street_name = fields.String(required=True, validate=Regexp("^[0-9a-zA-Z.'#@%& -/]+$", error='Only numbers, letters, spaces and valid characters for address are allowed.'))
+    suburb = fields.String(required=True, validate=Regexp("^[a-zA-Z.'#@%& -/]+$", error='Only letters, spaces and valid characters for address are allowed.'))
     postcode = fields.String(required=True, validate=Regexp('^[0-9a-zA-Z]+$', error='Only numbers and letters are allowed.'))
     class Meta:
         fields = ('id', 'street_number', 'street_name', 'suburb', 'postcode', 'user_id', 'user')

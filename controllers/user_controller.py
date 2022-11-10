@@ -25,7 +25,7 @@ def get_one_user(id):
         return {'error': f'User with id {id} not found.'}, 404
 
 # update user: users can update their own account info.
-@user_bp.route('/', methods=['PUT', 'PATCH'])
+@user_bp.route('/update/', methods=['PUT', 'PATCH'])
 @jwt_required()
 def update_account():
     stmt = db.select(User).filter_by(id=get_jwt_identity())
@@ -43,7 +43,7 @@ def update_account():
     return UserSchema(exclude=['password']).dump(user)
 
 # delete user: users can delete their own account.
-@user_bp.route('/', methods=["DELETE"])
+@user_bp.route('/del_account', methods=["DELETE"])
 @jwt_required()
 def delete_account():
     stmt = db.select(User).filter_by(id=get_jwt_identity())
