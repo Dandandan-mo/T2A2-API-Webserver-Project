@@ -9,7 +9,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 order_bp = Blueprint('orders', __name__, url_prefix='/orders')
 
 # create an order: all users can create an order by entering the id and quantity of the first product they want to purchase.
-@order_bp.route('/', methods=['POST'])
+@order_bp.route('/new_order/', methods=['POST'])
 @jwt_required()
 def create_order():
     data = OrderProductSchema().load(request.json)
@@ -25,7 +25,7 @@ def create_order():
     return OrderSchema().dump(order), 201
   
 # add more order products: users can add more products to an existing order.
-@order_bp.route('/<int:id>/', methods=['POST'])
+@order_bp.route('/<int:id>/add_product', methods=['POST'])
 @jwt_required()
 def add_order_product(id):
     data = OrderProductSchema().load(request.json, partial=True)
@@ -46,7 +46,7 @@ def add_order_product(id):
     return OrderSchema().dump(order), 201
 
 # update order products: users can adjust quantities of product they selected.
-@order_bp.route('/<int:id>/', methods=['PUT', 'PATCH'])
+@order_bp.route('/<int:id>/update', methods=['PUT', 'PATCH'])
 @jwt_required()
 def update_order_product(id):
     data = OrderProductSchema().load(request.json, partial=True)
@@ -102,7 +102,7 @@ def delete_a_product(id):
     if not order:
         return {'error': f'You do not have an order with id {id}.'}, 404
     
-    data = OrderProductSchema().load(request.json)
+    data = OrderProductSchema().load(request.json, partial=True)
     stmt = db.select(OrderProduct).filter_by(order_id=id, product_id=data['product_id'])
     order_product = db.session.scalar(stmt)
     if not order_product:
@@ -117,7 +117,7 @@ def delete_a_product(id):
     return OrderSchema().dump(order)
     
 # delete an order: all users can delete their own order history
-@order_bp.route('/<int:id>/', methods=["DELETE"])
+@order_bp.route('/<int:id>/del', methods=["DELETE"])
 @jwt_required()
 def delete_order(id):
     stmt = db.select(Order).filter_by(id=id, user_id=get_jwt_identity())
