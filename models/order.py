@@ -17,7 +17,7 @@ class Order(db.Model):
             total += order_product.subtotal
         return total
 
-    user = db.relationship('User', back_populates='orders')
+    user = db.relationship('User')
     order_products = db.relationship('OrderProduct', back_populates='order', cascade='all, delete')
 
 class OrderSchema(ma.Schema):

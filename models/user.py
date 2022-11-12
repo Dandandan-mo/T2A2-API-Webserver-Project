@@ -12,9 +12,7 @@ class User(db.Model):
     last_name = db.Column(db.String)
     phone_number = db.Column(db.String, nullable=False)
     
-    addresses = db.relationship('Address', back_populates='user', cascade='all, delete')
     products = db.relationship('Product', back_populates='user', cascade='all, delete')
-    orders = db.relationship('Order', back_populates='user', cascade='all, delete')
 
 class UserSchema(ma.Schema):
     products = fields.List(fields.Nested('ProductSchema', exclude=['user_id', 'user']))

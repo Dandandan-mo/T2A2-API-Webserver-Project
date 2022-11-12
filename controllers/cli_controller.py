@@ -46,14 +46,14 @@ def seed_db():
             street_name = 'Nicolson St',
             suburb = 'Calten',
             postcode = '3053',
-            user = users[0]
+            user_id = users[0].id
         ),
         Address(
             street_number = '1',
             street_name = 'Flemmingten Rd',
             suburb = 'Purkvile',
             postcode = '3052',
-            user = users[1]
+            user_id = users[1].id
         )
     ]
     db.session.add_all(addresses)
@@ -97,11 +97,11 @@ def seed_db():
     orders = [
         Order(
             date = datetime.strptime('11-01-22', '%m-%d-%y').date(),
-            user = users[0]
+            user_id = users[0].id
         ),
         Order(
             date = datetime.strptime('11-02-22', '%m-%d-%y').date(),
-            user = users[1]
+            user_id = users[1].id
         )
     ]
     db.session.add_all(orders)
