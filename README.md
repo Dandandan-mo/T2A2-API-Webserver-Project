@@ -905,7 +905,7 @@ source .venv/bin/activate
 ```
 pip install -r requirements.txt
 ```
-5. fill in the environment variables (DATABASE URL and JWT SECRET KEY) in the '.env.sample' file
+5. fill in the environment variables (DATABASE URL and JWT SECRET KEY) in the '.env.sample' file and change the file name into '.env'.
 6. drop, create, and seed table
 ```
 flask db drop
