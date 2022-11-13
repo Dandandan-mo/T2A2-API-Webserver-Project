@@ -11,16 +11,19 @@ db_bp = Blueprint('db', __name__)
 
 @db_bp.cli.command('create')
 def create_db():
+    # create all tables
     db.create_all()
     print('Tables created.')
 
 @db_bp.cli.command('drop')
 def drop_db():
+    # drop all tables
     db.drop_all()
     print('Tables dropped.')
 
 @db_bp.cli.command('seed')
 def seed_db():
+    # insert a list of user data into the users table, add them all and commit them into database
     users = [
         User(
             email = 'firstuser@email.com',
@@ -39,7 +42,8 @@ def seed_db():
     ]
     db.session.add_all(users)
     db.session.commit()
-
+    
+    # insert a list of address data to the addresses table, add the inserting
     addresses = [
         Address(
             street_number = '11',
@@ -58,6 +62,7 @@ def seed_db():
     ]
     db.session.add_all(addresses)
 
+    # insert a list of product data into the products table, add the inserting 
     products = [
         Product(
             name = 'Apple iPhone 11',
@@ -94,6 +99,7 @@ def seed_db():
     ]
     db.session.add_all(products)
 
+    # insert a list of order data into the orders table, add the inserting orders and commit all changes since last commit
     orders = [
         Order(
             date = datetime.strptime('11-01-22', '%m-%d-%y').date(),
@@ -107,6 +113,7 @@ def seed_db():
     db.session.add_all(orders)
     db.session.commit()
 
+    # insert a list of order_product into the order_products table, add and commit it to databse
     order_products = [
         OrderProduct(
             order = orders[0],
