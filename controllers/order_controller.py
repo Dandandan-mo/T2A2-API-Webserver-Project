@@ -55,7 +55,6 @@ def add_order_product(id):
     # return the order
     return OrderSchema().dump(order), 201
 
-# update order products: users can adjust quantities of product they selected.
 @order_bp.route('/<int:id>/update', methods=['PUT', 'PATCH'])
 @jwt_required()
 def update_order_product(id):
@@ -123,7 +122,7 @@ def delete_a_product(id):
     stmt = db.select(OrderProduct).filter_by(order_id=id, product_id=data['product_id'])
     order_product = db.session.scalar(stmt)
     if not order_product:
-        return {'error': f"Product not found with id {data['product_id']}."}, 404
+        return {'error': f"Product not found with id {data['product_id']} in your order {id}."}, 404
     # delete the order_product
     db.session.delete(order_product)
 
