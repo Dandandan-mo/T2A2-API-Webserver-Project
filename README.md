@@ -917,3 +917,5 @@ flask db seed
 flask run
 ```
 8. send the url (http://127.0.0.1:5000) in Postman and follow the API endpoint documentation above in  R5 to use all functions.
+
+*This is the original repo written for term 2 assignment
