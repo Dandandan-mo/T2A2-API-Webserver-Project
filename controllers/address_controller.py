@@ -8,7 +8,7 @@ address_bp = Blueprint('addresses', __name__, url_prefix='/addresses')
 @address_bp.route('/new_addr', methods=['POST'])
 @jwt_required()
 def add_address():
-    # validates and deserializes an input dictionary of the address to an application-level data structure
+     # validates and sanitise data using AddressSchema
     data = AddressSchema().load(request.json)
     # insert address data into the addresses table, add and commit it to databse, return the newly inserted address.
     address = Address(
@@ -45,7 +45,7 @@ def update_address(id):
     # get the particular address whose id matches the id provided and user_id matches the identity of the user logged in.
     stmt = db.select(Address).filter_by(user_id=get_jwt_identity(),id=id)
     address = db.session.scalar(stmt)
-    # validates and deserializes an input dictionary of the address to an application-level data structure
+     # validates and sanitise data using AddressSchema
     data = AddressSchema().load(request.json, partial=True)
     
     # if the address exist, update the address data in the addresses table and commit the change, return the updated address

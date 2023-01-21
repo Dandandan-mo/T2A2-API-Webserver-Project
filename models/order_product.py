@@ -24,6 +24,7 @@ class OrderProductSchema(ma.Schema):
 
     product_id = fields.Integer(required=True, validate=Range(min=1, min_inclusive=True, error='Product id must be a positive integer.'))
     quantity = fields.Integer(required=True, validate=Range(min=1, min_inclusive=True, error='The mininum quantity is 1.'))
+    # price = fields.Float(required=True)
 
     class Meta:
         fields = ('order_id', 'product_id', 'product', 'price', 'quantity', 'subtotal')

@@ -32,7 +32,7 @@ def update_account():
     stmt = db.select(User).filter_by(id=get_jwt_identity())
     user = db.session.scalar(stmt)
     
-    # validates and deserializes an input dictionary to an application-level data structure
+     # validates and sanitise data using UserSchema
     data = UserSchema().load(request.json, partial=True)
     # update the user information
     user.email = data.get('email') or user.email

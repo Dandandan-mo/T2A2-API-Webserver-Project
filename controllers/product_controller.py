@@ -8,7 +8,7 @@ product_bp = Blueprint('products', __name__, url_prefix='/products')
 @product_bp.route('/new_product/', methods=['POST'])
 @jwt_required()
 def add_product():
-    # validates and deserializes the input product info dictionary to an application-level data structure
+    # validates and sanitise data using ProductSchema
     data = ProductSchema().load(request.json)
     # insert a record to the products table and commit the inserting. return the newly inserted product object
     product = Product(
@@ -59,7 +59,7 @@ def update_product(id):
     product = db.session.scalar(stmt)
     if not product:
         return {'error': f'You do not have a product with id {id}'}, 404
-    # validates and deserializes an input dictionary of product info to an application-level data structure
+     # validates and sanitise data using ProductSchema
     data = ProductSchema().load(request.json, partial=True)
     # update the product info and commit it to database, return the updated product.
     product.name = data.get('name') or product.name

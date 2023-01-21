@@ -9,7 +9,7 @@ auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 @auth_bp.route('/register/', methods=['POST'])
 def register_user():
-    #  # validates and deserializes an input dictionary of user to an application-level data structure
+    # validates and sanitise data using UserSchema
     data = UserSchema().load(request.json)
     try:
         # insert user data to the users table, add and commit the inserting

@@ -585,7 +585,8 @@ ORMs have many benefits:
 ```json
 {
     "product_id": 3,
-    "quantity": 2
+    "quantity": 2,
+    "price": 20.25
 }
 ```
 - Sample Response:
@@ -837,20 +838,6 @@ ORMs have many benefits:
         }
     ],
     "total_payable": 20.25
-}
-```
-### Delete an order
-/orders/{order_id}/del
-- Methods: DELETE
-- Arguments: {order_id}
-- Description: delete an order history with {order_id} of the user and return a message.
-- Authentication: bearer token
-- Sample URL: `http://127.0.0.1:5000/orders/3/del`
-- JSON Request Body: None
-- Sample Response:
-```json
-{
-    "message": "Order 3 deleted successfully."
 }
 ```
 
